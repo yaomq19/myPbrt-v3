@@ -155,6 +155,7 @@ class Transform {
     }
     const Matrix4x4 &GetMatrix() const { return m; }
     const Matrix4x4 &GetInverseMatrix() const { return mInv; }
+    //判断该变换矩阵是否具有缩放项
     bool HasScale() const {
         Float la2 = (*this)(Vector3f(1, 0, 0)).LengthSquared();
         Float lb2 = (*this)(Vector3f(0, 1, 0)).LengthSquared();
@@ -163,12 +164,16 @@ class Transform {
         return (NOT_ONE(la2) || NOT_ONE(lb2) || NOT_ONE(lc2));
 #undef NOT_ONE
     }
+    //对p进行变换
     template <typename T>
     inline Point3<T> operator()(const Point3<T> &p) const;
+    //对v进行变换
     template <typename T>
     inline Vector3<T> operator()(const Vector3<T> &v) const;
+    //对n进行变换
     template <typename T>
     inline Normal3<T> operator()(const Normal3<T> &) const;
+    
     inline Ray operator()(const Ray &r) const;
     inline RayDifferential operator()(const RayDifferential &r) const;
     Bounds3f operator()(const Bounds3f &b) const;
@@ -204,8 +209,9 @@ class Transform {
     friend class AnimatedTransform;
     friend struct Quaternion;
 };
-
+//根据便宜向量delta返回平移矩阵
 Transform Translate(const Vector3f &delta);
+//返回缩放矩阵
 Transform Scale(Float x, Float y, Float z);
 Transform RotateX(Float theta);
 Transform RotateY(Float theta);
