@@ -54,15 +54,26 @@ class Shape {
     Shape(const Transform *ObjectToWorld, const Transform *WorldToObject,
           bool reverseOrientation);
     virtual ~Shape();
+    //返回该形状在物体空间的包围盒
     virtual Bounds3f ObjectBound() const = 0;
+    //返回该形状在世界空间的包围盒（提供默认实现但可以被重写）
     virtual Bounds3f WorldBound() const;
+    //确定是否存在相交，并在isect处返回相交细节信息用于后续处理（比如着色）
+    //相交测试一般以以下的形式进行最为高效：
+    //1、传入在世界空间的光线信息
+    //2、由具体的Shape类负责将光线转换到物体坐标空间
+    //3、在物理坐标空间执行相交测试计算
+    //4、将所得信息转回世界空间
+    //note：这么转换两次是因为在物体空间执行相交计算带来的性能提升要高于两次转换的开销
     virtual bool Intersect(const Ray &ray, Float *tHit,
                            SurfaceInteraction *isect,
                            bool testAlphaTexture = true) const = 0;
+    //只确定是否存在相交而不计算其所有细节
     virtual bool IntersectP(const Ray &ray,
                             bool testAlphaTexture = true) const {
         return Intersect(ray, nullptr, nullptr, testAlphaTexture);
     }
+    //物体空间中形状的表面积
     virtual Float Area() const = 0;
     // Sample a point on the surface of the shape and return the PDF with
     // respect to area on the surface.
@@ -82,10 +93,11 @@ class Shape {
     // used in this case.
     virtual Float SolidAngle(const Point3f &p, int nSamples = 512) const;
 
+public:
     // Shape Public Data
-    const Transform *ObjectToWorld, *WorldToObject;
-    const bool reverseOrientation;
-    const bool transformSwapsHandedness;
+    const Transform *ObjectToWorld, *WorldToObject;//物体坐标空间到世界坐标空间的互转变换
+    const bool reverseOrientation;//表示表面法线指向外部还是内部
+    const bool transformSwapsHandedness;//记录ObjectToWorld变换是否翻转左右手性
 };
 
 }  // namespace pbrt

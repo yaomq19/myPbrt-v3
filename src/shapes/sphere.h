@@ -70,9 +70,9 @@ class Sphere : public Shape {
 
   private:
     // Sphere Private Data
-    const Float radius;
-    const Float zMin, zMax;
-    const Float thetaMin, thetaMax, phiMax;
+    const Float radius;//半径
+    const Float zMin, zMax;//球体在 z 轴上的最小和最大高度
+    const Float thetaMin, thetaMax, phiMax;//球体从 z 轴正半轴(theta=0) 到 z 轴负半轴(theta=pi) 的极角范围，以及从 x 轴正半轴（phi=0）到 x 轴负半轴（phi=180）的弧度范围
 };
 
 std::shared_ptr<Shape> CreateSphereShape(const Transform *o2w,

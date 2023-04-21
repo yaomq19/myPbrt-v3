@@ -186,6 +186,7 @@ class Transform {
     Transform operator*(const Transform &t2) const;
     //判断该变换是否回翻转左右手性
     bool SwapsHandedness() const;
+    //对表面命中记录进行变换，返回变换后的表面命中记录
     SurfaceInteraction operator()(const SurfaceInteraction &si) const;
     template <typename T>
     inline Point3<T> operator()(const Point3<T> &pt,

@@ -45,6 +45,11 @@
 namespace pbrt {
 
 // Spectrum Utility Declarations
+/*
+    SampledSpectrum用CoefficientSpectrum基础结构来表示在起始和结束
+    波长之间均匀间隔采样的 SPD。波长覆盖范围从 400nm 到 700nm——人类视觉
+    系统最为敏感的可见光谱范围。样本数量 60 一般足够为渲染准确表示复杂的SPD
+*/
 static const int sampledLambdaStart = 400;
 static const int sampledLambdaEnd = 700;
 static const int nSpectralSamples = 60;
@@ -97,10 +102,12 @@ extern const Float RGBIllum2SpectGreen[nRGB2SpectSamples];
 extern const Float RGBIllum2SpectBlue[nRGB2SpectSamples];
 
 // Spectrum Declarations
+//系数光谱
 template <int nSpectrumSamples>
 class CoefficientSpectrum {
   public:
     // CoefficientSpectrum Public Methods
+    //提供了一个CoefficientSpectrum构造函数；它将光谱初始化为所有波长上都是常值
     CoefficientSpectrum(Float v = 0.f) {
         for (int i = 0; i < nSpectrumSamples; ++i) c[i] = v;
         DCHECK(!HasNaNs());
@@ -200,6 +207,7 @@ class CoefficientSpectrum {
     bool operator!=(const CoefficientSpectrum &sp) const {
         return !(*this == sp);
     }
+    //该光谱是否为零反射率
     bool IsBlack() const {
         for (int i = 0; i < nSpectrumSamples; ++i)
             if (c[i] != 0.) return false;
@@ -256,6 +264,7 @@ class CoefficientSpectrum {
             if (std::isnan(c[i])) return true;
         return false;
     }
+    //文件读写
     bool Write(FILE *f) const {
         for (int i = 0; i < nSpectrumSamples; ++i)
             if (fprintf(f, "%f ", c[i]) < 0) return false;
@@ -269,6 +278,7 @@ class CoefficientSpectrum {
         }
         return true;
     }
+    //获取单个样本值
     Float &operator[](int i) {
         DCHECK(i >= 0 && i < nSpectrumSamples);
         return c[i];
@@ -279,6 +289,7 @@ class CoefficientSpectrum {
     }
 
     // CoefficientSpectrum Public Data
+    //给出了用于表示 SPD 的样本数量
     static const int nSamples = nSpectrumSamples;
 
   protected:
