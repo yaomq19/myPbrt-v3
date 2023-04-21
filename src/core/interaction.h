@@ -60,16 +60,20 @@ struct Interaction {
           wo(Normalize(wo)),
           n(n),
           mediumInterface(mediumInterface) {}
+    //判断该交互是否是表面交互，即有无法向量（Normal3f()为默认零向量）
     bool IsSurfaceInteraction() const { return n != Normal3f(); }
+    //从当前交互点沿着方向d产生一条射线
     Ray SpawnRay(const Vector3f &d) const {
         Point3f o = OffsetRayOrigin(p, pError, n, d);
         return Ray(o, d, Infinity, time, GetMedium(d));
     }
+    //从当前交互点生成一条射线，指向目标点p2
     Ray SpawnRayTo(const Point3f &p2) const {
         Point3f origin = OffsetRayOrigin(p, pError, n, p2 - p);
         Vector3f d = p2 - p;
         return Ray(origin, d, 1 - ShadowEpsilon, time, GetMedium(d));
     }
+    //从当前交互点生成一条射线，指向另一个交互点it
     Ray SpawnRayTo(const Interaction &it) const {
         Point3f origin = OffsetRayOrigin(p, pError, n, it.p - p);
         Point3f target = OffsetRayOrigin(it.p, it.pError, it.n, origin - it.p);
@@ -82,22 +86,24 @@ struct Interaction {
     Interaction(const Point3f &p, Float time,
                 const MediumInterface &mediumInterface)
         : p(p), time(time), mediumInterface(mediumInterface) {}
+    //判断该交互是否是介质交互，即没有法向量
     bool IsMediumInteraction() const { return !IsSurfaceInteraction(); }
+    //根据方向w返回交互点所在的介质
     const Medium *GetMedium(const Vector3f &w) const {
         return Dot(w, n) > 0 ? mediumInterface.outside : mediumInterface.inside;
     }
+    //返回当前交互点所在的介质，如果出、入介质不同会报错
     const Medium *GetMedium() const {
         CHECK_EQ(mediumInterface.inside, mediumInterface.outside);
         return mediumInterface.inside;
     }
-
     // Interaction Public Data
-    Point3f p;
-    Float time;
-    Vector3f pError;
-    Vector3f wo;
-    Normal3f n;
-    MediumInterface mediumInterface;
+    Point3f p;//交互点坐标
+    Float time;//交互发生的时间
+    Vector3f pError;//交互点坐标的误差
+    Vector3f wo;//表示从物体表面交互点出发的方向
+    Normal3f n;//交互点法向量，为零向量表示为介质交互而非表面交互
+    MediumInterface mediumInterface;//表示介质信息的结构体，包含出、入介质的指针
 };
 
 class MediumInteraction : public Interaction {

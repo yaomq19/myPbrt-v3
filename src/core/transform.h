@@ -145,6 +145,7 @@ class Transform {
             }
         return false;
     }
+    //判断是否为单位矩阵
     bool IsIdentity() const {
         return (m.m[0][0] == 1.f && m.m[0][1] == 0.f && m.m[0][2] == 0.f &&
                 m.m[0][3] == 0.f && m.m[1][0] == 0.f && m.m[1][1] == 1.f &&
@@ -153,7 +154,9 @@ class Transform {
                 m.m[3][0] == 0.f && m.m[3][1] == 0.f && m.m[3][2] == 0.f &&
                 m.m[3][3] == 1.f);
     }
+    //get变换矩阵本体
     const Matrix4x4 &GetMatrix() const { return m; }
+    //get变换矩阵逆矩阵本体
     const Matrix4x4 &GetInverseMatrix() const { return mInv; }
     //判断该变换矩阵是否具有缩放项
     bool HasScale() const {
@@ -173,11 +176,15 @@ class Transform {
     //对n进行变换
     template <typename T>
     inline Normal3<T> operator()(const Normal3<T> &) const;
-    
+    //对r执行变换，返回变换后的射线
     inline Ray operator()(const Ray &r) const;
+    //对差分r进行变换，返回变换后的射线
     inline RayDifferential operator()(const RayDifferential &r) const;
+    //对包围盒b进行变换，返回变换后的bounding_box
     Bounds3f operator()(const Bounds3f &b) const;
+    //右乘一个变换矩阵t2，返回这t2和自身变换的聚合变换矩阵
     Transform operator*(const Transform &t2) const;
+    //判断该变换是否回翻转左右手性
     bool SwapsHandedness() const;
     SurfaceInteraction operator()(const SurfaceInteraction &si) const;
     template <typename T>
