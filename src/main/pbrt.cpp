@@ -70,12 +70,16 @@ Reformatting options:
 )");
     exit(msg ? 1 : 0);
 }
-
+class Test {
+  public:
+    static Test t;
+    int a;
+    static int b;
+};
 // main program
 int main(int argc, char *argv[]) {
     google::InitGoogleLogging(argv[0]);
     FLAGS_stderrthreshold = 1; // Warning and above.
-
     Options options;
     std::vector<std::string> filenames;
     // Process command-line arguments
